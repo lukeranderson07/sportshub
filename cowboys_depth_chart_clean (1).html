@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dallas Cowboys Depth Chart (Calibrated from ESPN)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Oswald:wght@500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --cowboys-navy: #003594;
+      --cowboys-deep: #041e42;
+      --cowboys-silver: #869397;
+      --cowboys-accent: #38bdf8;
+      --starter-gold: #f59e0b;
+      --starter-bg: rgba(245, 158, 11, 0.08);
+      --bg: #070b14;
+      --card-bg: #0f172a;
+      --border: #1e293b;
+      --text: #f8fafc;
+      --text-muted: #94a3b8;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Inter', -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.4;
+      padding: 20px;
+    }
+    .wrapper {
+      max-width: 1320px;
+      margin: 0 auto;
+    }
+
+    /* Minimalist Header */
+    header {
+      background: linear-gradient(135deg, var(--cowboys-deep) 0%, #03112c 100%);
+      border: 1px solid rgba(56, 189, 248, 0.25);
+      border-radius: 12px;
+      padding: 18px 24px;
+      margin-bottom: 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+    .star-logo {
+      width: 44px;
+      height: 44px;
+      background: var(--cowboys-navy);
+      border: 2px solid #ffffff;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-size: 26px;
+      font-weight: 900;
+    }
+    h1 {
+      font-family: 'Oswald', sans-serif;
+      font-size: 1.8rem;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      color: #fff;
+    }
+    .sub-head {
+      font-size: 0.85rem;
+      color: var(--cowboys-silver);
+    }
+    .header-links a {
+      color: var(--cowboys-accent);
+      text-decoration: none;
+      font-size: 0.82rem;
+      font-weight: 600;
+      margin-left: 12px;
+    }
+    .header-links a:hover { text-decoration: underline; }
+
+    /* Data Source Status Banner */
+    .source-banner {
+      background: rgba(16, 185, 129, 0.1);
+      border: 1px solid rgba(16, 185, 129, 0.35);
+      border-radius: 8px;
+      padding: 8px 16px;
+      margin-bottom: 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
+      font-size: 0.82rem;
+    }
+    .source-left {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: #10b981;
+      font-weight: 700;
+    }
+    .source-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #10b981;
+      box-shadow: 0 0 8px #10b981;
+    }
+
+    /* Filter & Search Bar */
+    .filter-bar {
+      background: #0c1220;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 12px 18px;
+      margin-bottom: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    .unit-selector {
+      display: flex;
+      gap: 8px;
+    }
+    .unit-btn {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      padding: 6px 14px;
+      border-radius: 6px;
+      font-size: 0.82rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+    .unit-btn:hover { color: #fff; border-color: rgba(56, 189, 248, 0.4); }
+    .unit-btn.active {
+      background: var(--cowboys-navy);
+      color: #fff;
+      border-color: var(--cowboys-accent);
+    }
+    .search-input {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      color: #fff;
+      padding: 7px 12px;
+      border-radius: 6px;
+      font-size: 0.82rem;
+      outline: none;
+      min-width: 220px;
+    }
+    .search-input:focus { border-color: var(--cowboys-accent); }
+
+    /* Section Headers */
+    .unit-title {
+      font-family: 'Oswald', sans-serif;
+      font-size: 1.25rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin: 24px 0 12px 0;
+      padding-bottom: 6px;
+      border-bottom: 1px solid var(--border);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .unit-title span {
+      font-family: 'Inter', sans-serif;
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--text-muted);
+    }
+
+    /* Position Table Rows */
+    .pos-block {
+      background: #0c1220;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 10px 14px;
+      margin-bottom: 10px;
+    }
+    .pos-label-bar {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 8px;
+    }
+    .pos-code-badge {
+      background: var(--cowboys-navy);
+      color: #fff;
+      font-family: 'Oswald', sans-serif;
+      font-size: 0.8rem;
+      font-weight: 700;
+      padding: 1px 7px;
+      border-radius: 4px;
+    }
+    .pos-full-label {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: #fff;
+    }
+
+    .depth-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 8px;
+    }
+
+    /* Minimalist Compact Card */
+    .player-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 8px 12px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      min-height: 58px;
+    }
+    .player-card.is-starter {
+      border: 1.5px solid rgba(245, 158, 11, 0.45);
+      background: var(--starter-bg);
+    }
+    .player-card.is-ir {
+      border-left: 3px solid #ef4444;
+      opacity: 0.85;
+    }
+    .player-card.is-out {
+      border-left: 3px solid #f97316;
+      opacity: 0.9;
+    }
+    .player-card.is-q {
+      border-left: 3px solid #eab308;
+    }
+
+    .card-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 4px;
+    }
+    .card-name {
+      font-size: 0.88rem;
+      font-weight: 700;
+      color: #fff;
+    }
+    .injury-badge {
+      font-size: 0.65rem;
+      font-weight: 800;
+      padding: 1px 5px;
+      border-radius: 3px;
+      margin-left: 6px;
+    }
+    .badge-q {
+      background: rgba(234, 179, 8, 0.2);
+      color: #eab308;
+      border: 1px solid rgba(234, 179, 8, 0.4);
+    }
+    .badge-o {
+      background: rgba(249, 115, 22, 0.2);
+      color: #f97316;
+      border: 1px solid rgba(249, 115, 22, 0.4);
+    }
+    .badge-ir {
+      background: rgba(239, 68, 68, 0.2);
+      color: #ef4444;
+      border: 1px solid rgba(239, 68, 68, 0.4);
+    }
+
+    .card-tag {
+      font-size: 0.65rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      padding: 1px 6px;
+      border-radius: 3px;
+    }
+    .tag-starter {
+      background: rgba(245, 158, 11, 0.2);
+      color: #fbbf24;
+      border: 1px solid rgba(245, 158, 11, 0.4);
+    }
+    .tag-backup {
+      background: rgba(148, 163, 184, 0.15);
+      color: #cbd5e1;
+      border: 1px solid rgba(148, 163, 184, 0.3);
+    }
+    .card-meta {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      display: flex;
+      justify-content: space-between;
+    }
+
+    footer {
+      margin-top: 30px;
+      padding-top: 14px;
+      border-top: 1px solid var(--border);
+      text-align: center;
+      font-size: 0.78rem;
+      color: var(--text-muted);
+    }
+  </style>
+</head>
+<body>
+  <div class="wrapper">
+    
+    <header>
+      <div class="header-left">
+        <div class="star-logo">★</div>
+        <div>
+          <h1>Dallas Cowboys Depth Chart</h1>
+          <div class="sub-head">Calibrated 1-to-1 with Official ESPN Depth Chart (3WR 1TE Offense • Base 3-4 Defense)</div>
+        </div>
+      </div>
+      <div class="header-links">
+        <a href="https://www.espn.com/nfl/team/depth/_/name/dal/dallas-cowboys" target="_blank">ESPN Depth Chart ↗</a>
+        <a href="https://www.dallascowboys.com/team/depth-chart" target="_blank">DallasCowboys.com ↗</a>
+      </div>
+    </header>
+
+    <div class="source-banner">
+      <div class="source-left">
+        <span class="source-dot"></span>
+        <span>100% Calibrated with ESPN Depth Chart Data</span>
+      </div>
+      <div style="font-size:0.75rem; color:var(--text-muted);">
+        Offense: 12 Positions | Defense: 12 Positions | Special Teams: 6 Positions
+      </div>
+    </div>
+
+    <div class="filter-bar">
+      <div class="unit-selector">
+        <button class="unit-btn active" onclick="setUnit('all')">All Units</button>
+        <button class="unit-btn" onclick="setUnit('Offense')">Offense (12)</button>
+        <button class="unit-btn" onclick="setUnit('Defense')">Defense (12)</button>
+        <button class="unit-btn" onclick="setUnit('Special Teams')">Special Teams (6)</button>
+      </div>
+      <input type="text" class="search-input" id="searchBox" placeholder="Filter player, position, tier..." oninput="handleSearch(this.value)">
+    </div>
+
+    <main id="depthBoard"></main>
+
+    <footer>
+      Dallas Cowboys Official Depth Chart • Grounded via <a href="https://www.espn.com/nfl/team/depth/_/name/dal/dallas-cowboys" target="_blank" style="color:var(--cowboys-accent);">ESPN.com</a>
+    </footer>
+
+  </div>
+
+  <script>
+    const depthData = {"Offense": [{"pos": "QB", "full_pos": "Quarterback", "strings": [{"rank": 1, "tier": "Starter", "name": "Dak Prescott", "injury": null, "status": "Active"}, {"rank": 2, "tier": "2nd", "name": "Sam Howell", "injury": null, "status": "Active"}]}, {"pos": "RB", "full_pos": "Running Back", "strings": [{"rank": 1, "tier": "Starter", "name": "Javonte Williams", "injury": null, "status": "Active"}, {"rank": 2, "tier": "2nd", "name": "Tyler Goodson", "injury": null, "status": "Active"}, {"rank": 3, "tier": "3rd", "name": "Malik Davis", "injury": "IR", "status": "Injured Reserve"}]}, {"pos": "WR1", "full_pos": "Wide Receiver 1", "strings": [{"rank": 1, "tier": "Starter", "name": "CeeDee Lamb", "injury": null, "status": "Active"}, {"rank": 2, "tier": "2nd", "name": "KaVontae Turpin", "injury": null, "status": "Active"}]}, {"pos": "WR2", "full_pos": "Wide Receiver 2", "strings": [{"rank": 1, "tier": "Starter", "name": "George Pickens", "injury": null, "status": "Active"}, {"rank": 2, "tier": "2nd", "name": "Jonathan Mingo", "injury": "Q", "status": "Questionable"}]}, {"pos": "WR3", "full_pos": "Wide Receiver 3 (Slot)", "strings": [{"rank": 1, "tier": "Starter", "name": "Ryan Flournoy", "injury": null, "status": "Active"}, {"rank": 2, "tier": "2nd", "name": "Camden Brown", "injury": null, "status": "Active"}]}, {"pos": "TE", "full_pos": "Tight End", "strings": [{"rank": 1, "tier": "Starter", "name": "Jake Ferguson", "injury": null, "status": "Active"}, {"rank": 2, "tier": "2nd", "name": "Brevyn Spann-Ford", "injury": null, "status": "Active"}, {"rank": 3, "tier": "3rd", "name": "Luke Schoonmaker", "injury": null, "status": "Active"}, {"rank": 4, "tier": "4th", "name": "Princeton Fant", "injury": "IR", "status": "Injured Reserve"}]}, {"pos": "FB", "full_pos": "Fullback", "strings": [{"rank": 1, "tier": "Starter", "name": "Hunter Luepke", "injury": null, "status": "Active"}]}, {"pos": "LT", "full_pos": "Left Tackle", "strings": [{"rank": 1, "tier": "Starter", "name": "Tyler Guyton", "injury": null, "status": "Active"}, {"rank": 2, "tier": "2nd", "name": "Drew Shelton", "injury": "O", "status": "Out"}]}, {"pos": "LG", "full_pos": "Left Guard", "strings": [{"rank": 1, "tier": "Starter", "name": "Tyler Smith", "injury": "Q", "status": "Questionable (Active Oct 8)"}, {"rank": 2, "tier": "2nd", "name": "T.J. Bass", "injury": null, "status": "Active"}]}, {"pos": "C", "full_pos": "Center", "strings": [{"rank": 1, "tier": "Starter", "name": "Cooper Beebe", "injury": null, "status": "Active"}, {"rank": 2, "tier": "2nd", "name": "Nick Leverett", "injury": null, "status": "Active"}, {"rank": 3, "tier": "3rd", "name": "Matt Hennessy", "injury": "IR", "status": "Injured Reserve"}]}, {"pos": "RG", "full_pos": "Right Guard", "strings": [{"rank": 1, "tier": "Starter", "name": "Tyler Booker", "injury": null, "status": "Active"}, {"rank": 2, "tier": "2nd", "name": "Ajani Cornelius", "injury": null, "status": "Active"}]}, {"pos": "RT", "full_pos": "Right Tackle", "strings": [{"rank": 1, "tier": "Starter", "name": "Terence Steele", "injury": null, "status": "Active"}, {"rank": 2, "tier": "2nd", "name": "Broderick Jones", "injury": null, "status": "Active"}]}], "Defense": [{"pos": "LDE", "full_pos": "Left Defensive End", "strings": [{"rank": 1, "tier": "Starter", "name": "Quinnen Williams", "injury": null, "status": "Active"}, {"rank": 2, "tier": "2nd", "name": "LT Overton", "injury": null, "status": "Active"}]}, {"pos": "NT", "full_pos": "Nose Tackle", "strings": [{"rank": 1, "tier": "Starter", "name": "Otito Ogbonnia", "injury": null, "status": "Active"}, {"rank": 2, "tier": "2nd", "name": "Jonathan Bullard", "injury": "IR", "status": "Injured Reserve"}]}, {"pos": "RDE", "full_pos": "Right Defensive End", "strings": [{"rank": 1, "tier": "Starter", "name": "Kenny Clark", "injury": null, "status": "Active"}, {"rank": 2, "tier": "2nd", "name": "Elijah Garcia", "injury": null, "status": "Active"}, {"rank": 3, "tier": "3rd", "name": "Kelvin Gilliam Jr.", "injury": "IR", "status": "Injured Reserve"}]}, {"pos": "WLB", "full_pos": "Weakside Linebacker (Edge)", "strings": [{"rank": 1, "tier": "Starter", "name": "Rashan Gary", "injury": null, "status": "Active"}, {"rank": 2, "tier": "2nd", "name": "Von Miller", "injury": null, "status": "Active"}, {"rank": 3, "tier": "3rd", "name": "James Houston", "injury": null, "status": "Active"}]}, {"pos": "LILB", "full_pos": "Left Inside Linebacker", "strings": [{"rank": 1, "tier": "Starter", "name": "DeMarvion Overshown", "injury": "O", "status": "Out"}, {"rank": 2, "tier": "2nd", "name": "Jaishawn Barham", "injury": null, "status": "Active"}]}, {"pos": "RILB", "full_pos": "Right Inside Linebacker", "strings": [{"rank": 1, "tier": "Starter", "name": "Dee Winters", "injury": null, "status": "Active"}, {"rank": 2, "tier": "2nd", "name": "Shemar James", "injury": null, "status": "Active"}, {"rank": 3, "tier": "3rd", "name": "Justin Barron", "injury": null, "status": "Active"}]}, {"pos": "SLB", "full_pos": "Strongside Linebacker (Edge)", "strings": [{"rank": 1, "tier": "Starter", "name": "Donovan Ezeiruaku", "injury": null, "status": "Active"}, {"rank": 2, "tier": "2nd", "name": "Malachi Lawrence", "injury": null, "status": "Active"}, {"rank": 3, "tier": "3rd", "name": "Tyrus Wheat", "injury": null, "status": "Active"}, {"rank": 4, "tier": "4th", "name": "Marist Liufau", "injury": "IR", "status": "Injured Reserve"}]}, {"pos": "LCB", "full_pos": "Left Cornerback", "strings": [{"rank": 1, "tier": "Starter", "name": "Joey Porter Jr.", "injury": null, "status": "Active (Trade Acq)"}, {"rank": 2, "tier": "2nd", "name": "Cobie Durant", "injury": "O", "status": "Out"}, {"rank": 3, "tier": "3rd", "name": "Caelen Carson", "injury": null, "status": "Active"}, {"rank": 4, "tier": "4th", "name": "Devin Moore", "injury": "IR", "status": "Injured Reserve"}]}, {"pos": "SS", "full_pos": "Strong Safety", "strings": [{"rank": 1, "tier": "Starter", "name": "Caleb Downs", "injury": null, "status": "Active"}, {"rank": 2, "tier": "2nd", "name": "Markquese Bell", "injury": null, "status": "Active"}, {"rank": 3, "tier": "3rd", "name": "Alijah Clark", "injury": null, "status": "Active"}, {"rank": 4, "tier": "4th", "name": "Jalen Thompson", "injury": "IR", "status": "Injured Reserve"}]}, {"pos": "FS", "full_pos": "Free Safety", "strings": [{"rank": 1, "tier": "Starter", "name": "Malik Hooker", "injury": null, "status": "Active"}, {"rank": 2, "tier": "2nd", "name": "Juanyeh Thomas", "injury": null, "status": "Active"}, {"rank": 3, "tier": "3rd", "name": "P.J. Locke", "injury": "IR", "status": "Injured Reserve"}]}, {"pos": "RCB", "full_pos": "Right Cornerback", "strings": [{"rank": 1, "tier": "Starter", "name": "DaRon Bland", "injury": null, "status": "Active"}, {"rank": 2, "tier": "2nd", "name": "Ameer Speed", "injury": null, "status": "Active"}, {"rank": 3, "tier": "3rd", "name": "Shavon Revel Jr.", "injury": null, "status": "Active"}]}, {"pos": "NB", "full_pos": "Nickel Cornerback", "strings": [{"rank": 1, "tier": "Starter", "name": "Reddy Steward", "injury": null, "status": "Active"}, {"rank": 2, "tier": "2nd", "name": "Caleb Downs", "injury": null, "status": "Active"}]}], "Special Teams": [{"pos": "PK", "full_pos": "Placekicker", "strings": [{"rank": 1, "tier": "Starter", "name": "Brandon Aubrey", "injury": null, "status": "Active"}]}, {"pos": "P", "full_pos": "Punter", "strings": [{"rank": 1, "tier": "Starter", "name": "Bryan Anger", "injury": null, "status": "Active"}]}, {"pos": "H", "full_pos": "Holder", "strings": [{"rank": 1, "tier": "Starter", "name": "Bryan Anger", "injury": null, "status": "Active"}]}, {"pos": "PR", "full_pos": "Punt Returner", "strings": [{"rank": 1, "tier": "Starter", "name": "KaVontae Turpin", "injury": null, "status": "Active"}, {"rank": 2, "tier": "2nd", "name": "Caleb Downs", "injury": null, "status": "Active"}, {"rank": 3, "tier": "3rd", "name": "Jonathan Mingo", "injury": "Q", "status": "Questionable"}]}, {"pos": "KR", "full_pos": "Kickoff Returner", "strings": [{"rank": 1, "tier": "Starter", "name": "KaVontae Turpin", "injury": null, "status": "Active"}, {"rank": 2, "tier": "2nd", "name": "Malik Davis", "injury": "IR", "status": "Injured Reserve"}]}, {"pos": "LS", "full_pos": "Long Snapper", "strings": [{"rank": 1, "tier": "Starter", "name": "Trent Sieg", "injury": null, "status": "Active"}]}]};
+    let activeUnit = 'all';
+    let searchTerm = '';
+
+    function renderBoard() {
+      const board = document.getElementById('depthBoard');
+      board.innerHTML = '';
+
+      for (const [unitName, positions] of Object.entries(depthData)) {
+        if (activeUnit !== 'all' && activeUnit !== unitName) continue;
+
+        const filteredPositions = positions.filter(posObj => {
+          if (!searchTerm) return true;
+          return posObj.pos.toLowerCase().includes(searchTerm) ||
+                 posObj.full_pos.toLowerCase().includes(searchTerm) ||
+                 posObj.strings.some(s => s.name.toLowerCase().includes(searchTerm) || (s.injury && s.injury.toLowerCase().includes(searchTerm)));
+        });
+
+        if (filteredPositions.length === 0) continue;
+
+        const unitSection = document.createElement('section');
+        unitSection.innerHTML = `
+          <div class="unit-title">
+            ${unitName} Unit
+            <span>${filteredPositions.length} Positions</span>
+          </div>
+          <div id="unit-container-${unitName.replace(/\s+/g, '')}"></div>
+        `;
+        board.appendChild(unitSection);
+
+        const container = unitSection.querySelector(`#unit-container-${unitName.replace(/\s+/g, '')}`);
+
+        filteredPositions.forEach(p => {
+          const block = document.createElement('div');
+          block.className = 'pos-block';
+          block.innerHTML = `
+            <div class="pos-label-bar">
+              <span class="pos-code-badge">${p.pos}</span>
+              <span class="pos-full-label">${p.full_pos}</span>
+            </div>
+            <div class="depth-grid" id="grid-${unitName}-${p.pos}"></div>
+          `;
+          container.appendChild(block);
+
+          const grid = block.querySelector(`#grid-${unitName}-${p.pos}`);
+          p.strings.forEach(s => {
+            const isStarter = s.rank === 1;
+            let cardClass = 'player-card';
+            if (isStarter) cardClass += ' is-starter';
+            if (s.injury === 'IR') cardClass += ' is-ir';
+            if (s.injury === 'O') cardClass += ' is-out';
+            if (s.injury === 'Q') cardClass += ' is-q';
+
+            let injuryBadge = '';
+            if (s.injury === 'Q') injuryBadge = '<span class="injury-badge badge-q">Q</span>';
+            if (s.injury === 'O') injuryBadge = '<span class="injury-badge badge-o">O</span>';
+            if (s.injury === 'IR') injuryBadge = '<span class="injury-badge badge-ir">IR</span>';
+
+            let statusColor = '#10b981';
+            if (s.injury === 'IR') statusColor = '#ef4444';
+            if (s.injury === 'O') statusColor = '#f97316';
+            if (s.injury === 'Q') statusColor = '#eab308';
+
+            const card = document.createElement('div');
+            card.className = cardClass;
+            card.innerHTML = `
+              <div class="card-top">
+                <span class="card-name">${s.name} ${injuryBadge}</span>
+                <span class="card-tag ${isStarter ? 'tag-starter' : 'tag-backup'}">${isStarter ? '★ STARTER' : s.tier + ' String'}</span>
+              </div>
+              <div class="card-meta">
+                <span style="color:var(--text-muted);">${p.pos} • Tier ${s.rank}</span>
+                <span style="color:${statusColor}; font-weight:700;">${s.status}</span>
+              </div>
+            `;
+            grid.appendChild(card);
+          });
+        });
+      }
+    }
+
+    function setUnit(unit) {
+      activeUnit = unit;
+      document.querySelectorAll('.unit-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.textContent.startsWith(unit) || (unit === 'all' && btn.textContent === 'All Units'));
+      });
+      renderBoard();
+    }
+
+    function handleSearch(val) {
+      searchTerm = val.trim().toLowerCase();
+      renderBoard();
+    }
+
+    window.addEventListener('DOMContentLoaded', renderBoard);
+  </script>
+</body>
+</html>
